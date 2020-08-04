@@ -27,8 +27,12 @@ app.get("/repositories", (request, response) => {
 });
 
 app.post("/repositories", (request, response) => {
+  const {title, url, techs} = request.body;
+  const repository = {id: uuid(), title, url, techs, likes: 0};
 
-  const repository = {id: uuid(), title: 'Desafio Node.js', url: 'https://github.com/joaowalter/Bootcamp01', techs: ["Node.js", "..."], likes: 0};
+  if (!title || !url || !techs) {
+    return response.status(400).json({ error:'Please input all the values.' })
+  };
 
   repositories.push(repository);
 
@@ -49,9 +53,10 @@ app.put("/repositories/:id", (request, response) => {
 
   const repository = {
     id,
-    title,
-    url,
-    techs,
+    title : title ? title : repositories[projectIndex].title,
+    url : url ? url : repositories[projectIndex].url,
+    techs : techs ? techs : repositories[projectIndex].techs,
+    likes: repositories[projectIndex].likes,
 };
 
 repositories[projectIndex] = repository;
@@ -83,7 +88,7 @@ app.post("/repositories/:id/like", (request, response) => {
 
   repositories[projectIndex].likes++;
 
-  return response.status(204).send();
+  return response.json(repositories[projectIndex]);
 
   // TODO
 });
